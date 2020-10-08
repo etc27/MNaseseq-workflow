@@ -41,6 +41,8 @@ In order to organize all of the files generated from processing the RNA-seq raw 
   │       ├── 4_multiQC/            <- Overall report of logs for each step
   │  
   │   └── bowtie2/                  <- Folder to store the indexed genome files from bowtie2
+  │    
+  │   └── plot2DO/                  <- Folder to store plot2DO script and output
   ```
   
 ### Download the reference genome and annotation
