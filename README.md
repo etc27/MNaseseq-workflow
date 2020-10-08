@@ -58,7 +58,7 @@ My raw sequencing data contains paired-end Illumina sequencing reads. Note that 
 ## 2. Analyze sequence quality with FastQC
 
 ### Description
-[FastQC: A quality control tool for high throughput sequence data](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+[FastQC: A quality control tool for high throughput sequence data.](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 "FastQC aims to provide a simple way to do some quality control checks on raw sequence data coming from high throughput sequencing pipelines. It provides a modular set of analyses which you can use to give a quick impression of whether your data has any problems of which you should be aware before doing any further analysis."
 
 ### Command
@@ -99,7 +99,7 @@ Finally, the **Sequence Duplication Levels** displays the relative level of dupl
 ## 3. Perform quality control with Trim Galore
 
 ### Description
-[Trim Galore: A wrapper tool around Cutadapt and FastQC to consistently apply quality and adapter trimming to FastQ files](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)
+[Trim Galore: A wrapper tool around Cutadapt and FastQC to consistently apply quality and adapter trimming to FastQ files.](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)
 Trim Galore performs adapter trimming (the default is the first 13 bp of Illumina standard adapters ('AGATCGGAAGAGC'), but it is able to autodetect the adapter sequence). It also removes sequences that become too short during the trimming process. With the `--paired` option, Trim Galore removes both reads in a pair if at least one of the two sequences becomes shorter than the threshold. Additionally, it can run FastQC on the output files to assess quality once trimming has been completed. I kept the default options for quality and length.
 
 ### Command
@@ -128,7 +128,7 @@ trim_galore --paired --fastqc --output_dir results/2_trimmed_output/ input/sampl
 ## 4. Align reads to genome with bowtie2
 
 ### Description
-[Bowtie 2: Fast gapped-read alignment](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3322381/)
+[Bowtie 2: Fast gapped-read alignment.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3322381/)
 [Bowtie 2](https://github.com/BenLangmead/bowtie2) is an ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences.
 
 ### Generating index
@@ -187,7 +187,7 @@ mv sample.sam aligned_sam
 ## 5. Generate analysis report with MultiQC
 
 ### Description
-[MultiQC: summarize analysis results for multiple tools and samples in a single report](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+[MultiQC: summarize analysis results for multiple tools and samples in a single report.](https://pubmed.ncbi.nlm.nih.gov/27312411/)
 MultiQC is a tool to create a single report visualizing output from multiple tools across many samples, including the output of FastQC, Trim_Galore, and Bowtie 2.
 
 ### Command
