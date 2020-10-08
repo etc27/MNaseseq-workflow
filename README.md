@@ -187,7 +187,7 @@ mv sample.sam aligned_sam
 ## 5. Generate analysis report with MultiQC
 
 ### Description
-[MultiQC: summarize analysis results for multiple tools and samples in a single report](MultiQC: summarize analysis results for multiple tools and samples in a single report)
+[MultiQC: summarize analysis results for multiple tools and samples in a single report](https://pubmed.ncbi.nlm.nih.gov/27312411/)
 MultiQC is a tool to create a single report visualizing output from multiple tools across many samples, including the output of FastQC, Trim_Galore, and Bowtie 2.
 
 ### Command
