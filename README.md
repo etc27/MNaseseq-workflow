@@ -283,7 +283,7 @@ Copy custom list of genes to plot2DO/annotations/ folder.
 ```
 cp annotation/proteincoding_sublist.gtf plot2DO/annotations
 ```
-Convert list of genes to bed format
+Convert list of genes to bed format.
 ```
 gtf2bed < proteincoding_sublist.gtf > proteincoding_full.bed
 ```
