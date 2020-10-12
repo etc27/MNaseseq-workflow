@@ -210,3 +210,8 @@ multiqc results --outdir results/4_multiQC
 MultiQC summarizes results from FastQC before and after trimming, as well as logs from the alignment and gene counts steps. Many of the figures in MultiQC are the same or similar to those produced from FastQC (see FastQC section above). One new figure in the FastQC section is **Sequence Counts**, displaying the sequence counts for each sample divided into unique reads and estimated duplicate reads. The ratio of unique to duplicate reads gives information about library complexity vs. sequencing depth.
 
 
+# TO ADD
+-folder structure with plot2DO folder
+-how to clone plot2DO from GitHub
+-making annotations bed list for lists of Arabidopsis genes (and add code to repository, also add files to folder structure)
+-code to run plot2DO and output files
