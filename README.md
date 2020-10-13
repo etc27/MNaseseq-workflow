@@ -45,7 +45,7 @@ In order to organize all of the files generated from processing the RNA-seq raw 
   │   └── plot2DO/                  <- Folder to store plot2DO script and output
   │       ├── annotations/          <- Annotations folder for plot2D
   │       ├── config/               <- Config folder for plot2DO (don't edit)
-  │       ├── misc/.                <- Examples of plot2DO output
+  │       ├── misc/                 <- Examples of plot2DO output
   │       ├── output/               <- Output from plot2D
   │       ├── sample_BAM_files/     <- Sample BAM files provided for plot2DO workflow
   │       ├── source/               <- Source code for plot2DO (don't edit)
