@@ -258,24 +258,24 @@ Navigate to annotation/ folder. Save the rows of the Araport11 annotation corres
 ```
 awk '$3 == "transcript" {print}' Araport11_GFF3_genes_transposons.201606.gtf > Araport_transcripts.gtf
 ```
-Save the rows of Araport11_gene_type.txt corresponding to protein-coding genes as protein_coding.txt
+Save the gene names of Araport11_gene_type.txt corresponding to protein-coding genes as proteincoding.txt (list of genes)
 ```
-awk '$2 == "protein_coding" {print}' Araport11_gene_type.txt > protein_coding.txt
+awk '$2 == "protein_coding" {print $1}' Araport11_gene_type.txt > proteincoding.txt
 ```
 
 #### Commands run in RStudio
 Run **generateNonredundantGeneList** to remove redundant genes from Araport_transcripts.gtf
 ```
-#first parameter: input file name
+#first parameter: input gtf file
 #second parameter: output file name
-Rscript generateNonredundantGeneList.R "Araport_transcripts.gtf" "Araport_transcripts_nonredundant.gtf"
+Rscript nonredundantGenes.R "Araport_transcripts.gtf" "Araport_transcripts_nonredundant.gtf"
 ```
 Run **generateGeneSublist** to generate custom list of genes
 ```
-#first parameter: input file name
+#first parameter: input gtf file
 #second parameter: list of gene names
 #third parameter: output file name
-Rscript generateGeneSublist.R "Araport_transcripts_nonredundant.gtf" "protein_coding.txt" "proteincoding_sublist.gtf"
+Rscript geneSublist.R "Araport_transcripts_nonredundant.gtf" "proteincoding.txt" "proteincoding_sublist.gtf"
 ```
 
 #### Commands run in command line (part 2)
