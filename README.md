@@ -1,5 +1,5 @@
 # Workflow for generating nucleosome occupancy plots from MNase-seq data
-Emma Tung Corcoran (10/07/2020)
+Emma Tung Corcoran (10/13/2020)
 
 ## Introduction
 This document covers my basic workflow for processing paired-end MNase-seq (micrococcal nuclease digestion with deep sequencing) samples and assaying nucleosome occupancy at different genomic loci. I used the [Ruddle HPC cluster at the Yale Center for Research Computing](https://docs.ycrc.yale.edu/clusters-at-yale/clusters/ruddle/) for my HPC environment.
@@ -251,7 +251,7 @@ Rscript plot2DO.R -f ../results/4_aligned_sequences/aligned_bam/sample.bam -g ta
 By default, plot2DO computes the coverage of all sites across the genome, but it is possible to have plot2DO compute the coverage for custom lists of sites. For *Arabidopsis thaliana*, I am interested in computing the coverage for all protein-coding genes.
 
 ### Generating custom list of sites in bed format
-Plot2DO accepts a list of sites in bed format as a parameter for alignment. First, I generated this list of sites using the command line and R. The following example demonstrates you can use this workflow for a list of all protein-coding genes in *Arabidopsis thaliana*.
+Plot2DO accepts a list of sites in bed format as a parameter for alignment. First, I generated this list of sites using the command line and R. The following example demonstrates using this workflow for a list of all protein-coding genes in *Arabidopsis thaliana*. R files and annotation files can be found within the annotation/ folder.
 
 ### Commands run in command line (part 1)
 Navigate to annotation/ folder. Save the rows of the Araport11 annotation corresponding to transcripts as Araport_transcripts.gtf
