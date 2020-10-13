@@ -263,14 +263,14 @@ Save the gene names of Araport11_gene_type.txt corresponding to protein-coding g
 awk '$2 == "protein_coding" {print $1}' Araport11_gene_type.txt > proteincoding.txt
 ```
 
-### Commands run in RStudio
-Run **generateNonredundantGeneList** to remove redundant genes from Araport_transcripts.gtf
+### Commands run in R
+Run **nonredundantGenes.R** to remove redundant genes from Araport_transcripts.gtf
 ```
 #first parameter: input gtf file
 #second parameter: output file name
 Rscript nonredundantGenes.R "Araport_transcripts.gtf" "Araport_transcripts_nonredundant.gtf"
 ```
-Run **generateGeneSublist** to generate custom list of genes
+Run **geneSublist.R** to generate custom list of genes
 ```
 #first parameter: input gtf file
 #second parameter: list of gene names
