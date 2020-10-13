@@ -247,13 +247,13 @@ Rscript plot2DO.R -f ../results/4_aligned_sequences/aligned_bam/sample.bam -g ta
     └── OCC_matrix.TSS.50_200.sample.RData           <- R Data generated from plot2DO execution
 ```
 
-### Using plot2DO to generate plots for custom lists of genes
+## 7. Using plot2DO to generate plots for custom lists of genes
 By default, plot2DO computes the coverage of all sites across the genome, but it is possible to have plot2DO compute the coverage for custom lists of sites. For *Arabidopsis thaliana*, I am interested in computing the coverage for all protein-coding genes.
 
-#### Generating custom list of sites in bed format
+### Generating custom list of sites in bed format
 Plot2DO accepts a list of sites in bed format as a parameter for alignment. First, I generated this list of sites using the command line and R. The following example demonstrates you can use this workflow for a list of all protein-coding genes in *Arabidopsis thaliana*.
 
-#### Commands run in command line (part 1)
+### Commands run in command line (part 1)
 Navigate to annotation/ folder. Save the rows of the Araport11 annotation corresponding to transcripts as Araport_transcripts.gtf
 ```
 awk '$3 == "transcript" {print}' Araport11_GFF3_genes_transposons.201606.gtf > Araport_transcripts.gtf
@@ -263,7 +263,7 @@ Save the gene names of Araport11_gene_type.txt corresponding to protein-coding g
 awk '$2 == "protein_coding" {print $1}' Araport11_gene_type.txt > proteincoding.txt
 ```
 
-#### Commands run in RStudio
+### Commands run in RStudio
 Run **generateNonredundantGeneList** to remove redundant genes from Araport_transcripts.gtf
 ```
 #first parameter: input gtf file
@@ -278,7 +278,7 @@ Run **generateGeneSublist** to generate custom list of genes
 Rscript geneSublist.R "Araport_transcripts_nonredundant.gtf" "proteincoding.txt" "proteincoding_sublist.gtf"
 ```
 
-#### Commands run in command line (part 2)
+### Commands run in command line (part 2)
 Copy custom list of genes to plot2DO/annotations/ folder.
 ```
 cp annotation/proteincoding_sublist.gtf plot2DO/annotations
@@ -292,7 +292,7 @@ Keep only the first 6 columns of bed file so that it is compatible with plot2DO.
 awk -v OFS='\t' '{print $1,$2,$3,$4,$5,$6}' proteincoding_full.bed > proteincoding.bed
 ```
 
-#### Run plot2DO with custom list of sites
+### Run plot2DO with custom list of sites
 ```
 # Run plot2DO
 #-f: input bam file
