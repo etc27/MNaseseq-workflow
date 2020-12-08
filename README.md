@@ -26,6 +26,7 @@ In order to organize all of the files generated from processing the RNA-seq raw 
 ```
 ── MNaseseq_data/
   │   └── annotation/               <- Genome annotation file (.GTF/.GFF)
+  │   └── annotation_subsets/              <- Annotations folder containing sublists of genomic elements
   │  
   │   └── genome/                   <- Reference genome file (.FASTA)
   │  
@@ -39,11 +40,12 @@ In order to organize all of the files generated from processing the RNA-seq raw 
   │           ├── aligned_logs/     <- Log from running bowtie2 alignment step
   │           ├── aligned_sam/      <- Alignment files generated from bowtie2 (.SAM)
   │       ├── 4_multiQC/            <- Overall report of logs for each step
+  │       ├── 5_danpos/             <- Output from danpos
   │  
   │   └── bowtie2/                  <- Folder to store the indexed genome files from bowtie2
   │    
   │   └── plot2DO/                  <- Folder to store plot2DO script and output
-  │       ├── annotations/          <- Annotations folder for plot2D
+  │       ├── annotations/          <- Annotations folder for plot2DO
   │       ├── config/               <- Config folder for plot2DO (don't edit)
   │       ├── misc/                 <- Examples of plot2DO output
   │       ├── output/               <- Output from plot2D
@@ -192,7 +194,34 @@ mv sample.sam aligned_sam
     └── aligned_sam/sample.sam           <- SAM alignment
 ```
 
-## 5. Generate analysis report with MultiQC
+## 5. Remove duplicate reads using Picard
+
+### Description
+[Picard](https://broadinstitute.github.io/picard/) is a set of command line tools for manipulating high-throughput sequencing (HTS) data and formats such as SAM/BAM/CRAM and VCF.
+
+### Sort and index .bam file
+```
+# -o output path
+samtools sort -o sample.sort.bam sample.bam
+samtools index sample.sort.bam
+```
+
+### Remove duplicates using Picard
+```
+# Run Picard MarkDuplicates command
+# I: input path
+# O: output path
+# M: File to write duplication metrics to
+# ASSUME_SORTED: if true, assume that the input file is coordinate sorted even if the header says otherwise
+# REMOVE_DUPLICATES: if true, do not write duplicates to the output file 
+# VALIDATION_STRINGENCY: Validation stringency for all SAM files read by this program. Setting stringency to SILENT can improve performance when processing a BAM file in which variable-length data (read, qualities, tags) do not otherwise need to be decoded.
+java -jar $EBROOTPICARD/picard.jar MarkDuplicates I=sample.sort.bam O=sample.NoDup.sort.bam \
+      M=no_dup_metrics.txt ASSUME_SORTED=true REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT
+# Index new .bam file
+samtools index sample.NoDup.sort.bam
+```
+
+## 6. Generate analysis report with MultiQC
 
 ### Description
 [MultiQC: summarize analysis results for multiple tools and samples in a single report.](https://pubmed.ncbi.nlm.nih.gov/27312411/)
@@ -215,7 +244,7 @@ multiqc results --outdir results/4_multiQC
 ### Explanation of MultiQC Figures
 MultiQC summarizes results from FastQC before and after trimming, as well as logs from the alignment and gene counts steps. Many of the figures in MultiQC are the same or similar to those produced from FastQC (see FastQC section above). One new figure in the FastQC section is **Sequence Counts**, displaying the sequence counts for each sample divided into unique reads and estimated duplicate reads. The ratio of unique to duplicate reads gives information about library complexity vs. sequencing depth.
 
-## 6. Generate nucleosome occupancy plots using Plot2DO
+## 7. Assess quality of MNase-seq experiment using Plot2DO
 
 ### Description
 [Plot2DO: Creating 2D Occupancy Plots](https://link.springer.com/protocol/10.1007/978-1-0716-0301-7_5). 
@@ -232,23 +261,119 @@ Rscript plot2DO_setup.R
 ```
 
 ### Command
-PlotDO provides a 2D heatmap, allowing simultaneous visualization of the fragment length distribution and the average nucleosome occupancy. Run the following script within the plot2DO folder to execute plot2DO. Since I was interested in the profiles of protein-coding genes, I input an annotation file corresponding to the TSS of all protein-coding genes in Arabidopsis thaliana to create a custom list of sites for the plot.
+PlotDO generates a 2D heatmap, allowing simultaneous visualization of the fragment length distribution and the average nucleosome occupancy. Run the following script within the plot2DO folder to execute plot2DO. Since I was interested in the profiles of protein-coding genes, I input an annotation file corresponding to the TSS of all protein-coding genes in Arabidopsis thaliana to create a custom list of sites for the plot. I like to use plot2DO as an initial quality check to assess the fragment length distribution of the MNase-seq data - there should be a strong enrichment of fragment length around 147 bp.
 ```
 # Run plot2DO
 #-f: input bam file
 #-g: genome (tair10 for Arabidopsis thaliana)
 #--sites: user-provided sites to be aligned (BED file)
 #--align: points of the provided intervals to be aligned
-#--minLength: the smallest DNA fragment to be considered [default = 50]
-#--maxLength: the largest DNA fragment to be considered [default = 200]
 #--siteLabel: label for the aligned sites [default = Sites]
-Rscript plot2DO.R -f ../results/4_aligned_sequences/aligned_bam/sample.bam -g tair10 \ 
---sites=annotations/proteincoding.bed --align=fivePrime --minLength=140 --maxLength=160 --siteLabel=proteincoding
+Rscript plot2DO.R -f ../results/3_aligned_sequences/aligned_bam/sample.NoDup.sort.bam -g tair10 \ 
+--sites=annotations/proteincoding.bed --align=fivePrime --siteLabel=proteincoding
 ```
 
 ### Output
 ```
 ── plot2DO/output/
-    └── OCC_matrix.proteincoding.140_160.sample.pdf             <- The three panels generated by plot2DO: (1) 2D occupancy plot (2) One-dimensional occupancy plot (3) DNA fragment length histogram
-    └── OCC_matrix.proteincoding.140_160.sample.RData           <- R Data generated from plot2DO execution
+    └── OCC_matrix.proteincoding.sample.pdf             <- The three panels generated by plot2DO: (1) 2D occupancy plot (2) One-dimensional occupancy plot (3) DNA fragment length histogram
+    └── OCC_matrix.proteincoding.sample.RData           <- R Data generated from plot2DO execution
+```
+
+## 8. Filter DNA fragment length using samtools
+
+### Description
+If the plot2DO heatmap indicates that there is a non-trivial percentage of DNA fragments outside of the expected range (~147 bp), I filter the DNA fragment length from 140 bp to 160 bp.
+
+### Command
+```
+# Filter DNA fragment length from 140 bp to 160 bp
+samtools view -h sample.NoDup.sort.bam | awk 'substr($0,1,1)=="@" || ($9>=140 && $9<=160) || ($9<=-140 && $9>=-160)' | samtools view -b > sample-140-160.bam
+samtools index sample-140-160.bam
+```
+
+## 9. Generate nucleosome occupancy plots using DANPOS3
+
+### Description
+[DANPOS: A toolkit for Dynamic Analysis of Nucleosome and Protein Occupancy by Sequencing](https://sites.google.com/site/danposdoc/). 
+[DANPOS: A toolkit for Dynamic Analysis of Nucleosome and Protein Occupancy by Sequencing](https://sites.google.com/site/danposdoc/), provides different tools to analyze chromatin features, including the location, fuzziness, and occupancy at each nucleosome.
+
+### Run dpos
+Dpos, the first peak-calling algorithm developed in DANPOS, analyzes changes in the location, fuzziness, and occupancy at each nucleosome or protein binding position. Multiple samples (separated by commas) can be provided as inputs to the same command.
+```
+# Run dpos from 5_danpos folder
+#-m: set to 1 if the input data is mate-pair (paired-end) reads
+#--mifrsz: the smallest DNA fragment to be considered
+#--mafrsz: the largest DNA fragment to be considered
+#-o: output directory
+#-n: data normalization method, could be 'F','S' or 'N', representing normalizing by fold change, normalizing by sampling, or no normalization (default: F)
+danpos.py dpos ../3_aligned_sequences/aligned_bam/sample1-140-160.bam,../3_aligned_sequences/aligned_bam/sample2-140-160.bam -m 1 --mifrsz 140 --mafrsz 160 -o output -n F
+```
+
+### Output
+```
+── 5_danpos/output/pooled/
+    └── sample1-140-160.Fnor.smooth.wig                      <- These .wig format files contain protein occupancy values at each base pair across the whole genome in sample 1
+    └── sample1-140-160.Fnor.smooth.positions.xls            <- These files contains the protein binding positions defined in sample 1
+    └── sample2-140-160.Fnor.smooth.wig                      <- These .wig format files contain protein occupancy values at each base pair across the whole genome in sample 2
+    └── sample2-140-160.Fnor.smooth.positions.xls            <- These files contains the protein binding positions defined in sample 2
+```
+### Run profile
+Profile is a function in DANPOS for analyzing the distribution of a chromatin feature flanking each given group of genomic sites or regions, such as transcription start sites, gene bodies, or enhancers.
+```
+# Run profile from 5_danpos/pooled folder
+#--genomic_sites: the category of genomic site to be analyzed (TSS=transcription start site)
+#--genefile_paths: path to file that contain a set of genes (.genePred file with all protein-coding genes in Arabidopsis thaliana)
+#--flank_up: How far to calculate from the up-stream of each category of genomic site (e.g. TSS)
+#--flank_down: How far to calculate from the down-stream of each category of genomic site (e.g. TSS)
+danpos.py profile sample1-140-160.Fnor.smooth.wig,sample2-140-160.Fnor.smooth.wig \
+--genomic_sites TSS --genefile_paths ../../../annotation_subsets/Athaliana_proteincoding.genePred --flank_up 500 --flank_dn 1000
+```
+
+### Output
+```
+── 5_danpos/output/pooled
+    └── profile_TSS.xls                            <- This file contains the data that is used to plot each figure in the .pdf file.
+    └── profile.pdf                                <- This file contains all the figures plotted by the Profile function.
+    └── profile.R                                  <- This file contains all the R commands for plotting figures in the .pdf file. 
+    └── profile_TSS_heatmap/                       <- This is a directory containing data for plotting the heat map
+            ├── ...sample1-140-160.Fnor.smooth.wig.heatmap.xls/    
+            ├── ...sample2-140-160.Fnor.smooth.wig.heatmap.xls/  
+```
+
+## 10. Import DANPOS output to RStudio and plot data using ggplot2
+
+### Description
+After obtaining the DANPOS output, I import the files in the profile/ directory into RStudio in order to make nice plots of the output. For the example shown below, I had eight different samples.
+
+### R code
+```
+#load required libraries
+library(ggplot2)
+library(tidyr)
+
+#Read in profile data and add column names
+profile_vals = read.table("profile_TSS.xls", header = TRUE, sep = '\t')
+profile_vals = profile_vals[,1:9]
+colnames(profile_vals) = c("position", "sample1", "sample2", "sample3", "sample4", "sample5", "sample6", "sample7", "sample8")
+profile_vals = data.frame(profile_vals)
+
+#Make tibble
+profile_vals <- profile_vals %>% 
+  data.frame() %>%
+  as_tibble()
+ 
+#Gather data for plotting with ggplot
+gathered_vals <- profile_vals %>%
+  pivot_longer(!position, names_to = "genotype", values_to = "count")
+  
+#Plot all data
+ggplot(gathered_vals, aes(x=position, y = count, group = genotype, colour = genotype)) + 
+  geom_line(size=1) +
+  ggtitle("MNase-seq data") +
+  ylab("Average nucleosome occupancy") +
+  xlab("Position relative to TSS") +
+  theme_bw() +
+  theme(text = element_text(size=15))
+ggsave("Alldata.pdf", device=pdf())
 ```
