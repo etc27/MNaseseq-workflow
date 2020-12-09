@@ -1,5 +1,5 @@
 # Workflow for generating nucleosome occupancy plots from MNase-seq data
-Emma Tung Corcoran (10/13/2020)
+Emma Tung Corcoran (12/09/2020)
 
 ## Introduction
 This document covers my basic workflow for processing paired-end MNase-seq (micrococcal nuclease digestion with deep sequencing) samples and assaying nucleosome occupancy at different genomic loci. I used the [Ruddle HPC cluster at the Yale Center for Research Computing](https://docs.ycrc.yale.edu/clusters-at-yale/clusters/ruddle/) for my HPC environment.
@@ -261,16 +261,16 @@ Rscript plot2DO_setup.R
 ```
 
 ### Command
-PlotDO generates a 2D heatmap, allowing simultaneous visualization of the fragment length distribution and the average nucleosome occupancy. Run the following script within the plot2DO folder to execute plot2DO. Since I was interested in the profiles of protein-coding genes, I input an annotation file corresponding to the TSS of all protein-coding genes in Arabidopsis thaliana to create a custom list of sites for the plot. I like to use plot2DO as an initial quality check to assess the fragment length distribution of the MNase-seq data - there should be a strong enrichment of fragment length around 147 bp.
+PlotDO generates a 2D heatmap, allowing simultaneous visualization of the fragment length distribution and the average nucleosome occupancy. Run the following script within the plot2DO folder to execute plot2DO. I like to use plot2DO as an initial quality check to assess the fragment length distribution of the MNase-seq data - there should be a strong enrichment of fragment length around 147 bp. I set the reference points to be aligned as the TSS, but I am mainly using this step to examine the fragment length distribution.
 ```
 # Run plot2DO
 #-f: input bam file
 #-g: genome (tair10 for Arabidopsis thaliana)
-#--sites: user-provided sites to be aligned (BED file)
-#--align: points of the provided intervals to be aligned
-#--siteLabel: label for the aligned sites [default = Sites]
-Rscript plot2DO.R -f ../results/3_aligned_sequences/aligned_bam/sample.NoDup.sort.bam -g tair10 \ 
---sites=annotations/proteincoding.bed --align=fivePrime --siteLabel=proteincoding
+#--reference: Reference points to be aligned
+#--simplifyPlot: Simplify the plot (show only the 2D heat map)
+#--squeezePlot: Simplify the plot and squeeze the heat map
+#-m: Maximum value on the color scale (if you want to compare multiple samples, you should set the color scale max to the same value for all samples)
+Rscript plot2DO.R -f ../results/3_aligned_sequences/aligned_bam/sample.NoDup.sort.bam -g tair10 --reference=TSS --squeezePlot=on --simplifyPlot=on -m 0.05
 ```
 
 ### Output
@@ -341,7 +341,7 @@ Finally, with the genePred file containing single isoforms for each gene, I can 
 #first parameter: input genePred file
 #second parameter: list of genes to include in sublist
 #third parameter: output file name
-Rscript geneSublist_genepred.R "Araport_nonredundant.genePred" "proteincoding_genes.txt" "Araport_proteincoding.genePred"
+Rscript geneSublist_genepred.R "Araport_nonredundant.genePred" "protein_coding.txt" "Araport_proteincoding.genePred"
 ```
 
 ### Run profile
