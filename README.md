@@ -318,6 +318,32 @@ danpos.py dpos ../3_aligned_sequences/aligned_bam/sample1-140-160.bam,../3_align
     └── sample2-140-160.Fnor.smooth.wig                      <- These .wig format files contain protein occupancy values at each base pair across the whole genome in sample 2
     └── sample2-140-160.Fnor.smooth.positions.xls            <- These files contains the protein binding positions defined in sample 2
 ```
+
+### Make annotation files
+In order to run the profile function in the next step, correctly-formatted annotation files are required. I first use the [gtfToGenePred function from the UCSC genome browser](https://genome.ucsc.edu/goldenPath/help/bigGenePred.html). Download gtfToGenePred from the UCSC genome browser website and mark it as executable with the following command:
+```
+chmod +x gtfToGenePred
+```
+Then, run gtfToGenePred on your gtf file (I used the Araport11 annotation).
+```
+#first parameter: gtf file
+#second parameter: output genePred file name
+gtfToGenePred Araport11_GFF3_genes_transposons.201606.gtf Araport.genePred
+```
+Since the Araport11 annotation contains multiple isoforms for many of the genes, I then removed redundant isoforms to keep only the first isoform listed for each gene. The R script that I used to do this step (called nonredundantGenes_firstiso_genepred.R) is included in the annotation/ folder.
+```
+#first parameter: input genePred file
+#second paramter: output file name
+Rscript nonredundantGenes_firstiso_genepred.R "Araport.genePred" "Araport_nonredundant.genePred"
+```
+Finally, with the genePred file containing single isoforms for each gene, I can then make sublists of the genes with another R script included in the annotation/ folder (called geneSublist_genepred.R). Since I was interested in all protein-coding genes, I made a sublist containing only the protein-coding genes.
+```
+#first parameter: input genePred file
+#second parameter: list of genes to include in sublist
+#third parameter: output file name
+Rscript geneSublist_genepred.R "Araport_nonredundant.genePred" "proteincoding_genes.txt" "Araport_proteincoding.genePred"
+```
+
 ### Run profile
 Profile is a function in DANPOS for analyzing the distribution of a chromatin feature flanking each given group of genomic sites or regions, such as transcription start sites, gene bodies, or enhancers.
 ```
@@ -327,7 +353,7 @@ Profile is a function in DANPOS for analyzing the distribution of a chromatin fe
 #--flank_up: How far to calculate from the up-stream of each category of genomic site (e.g. TSS)
 #--flank_down: How far to calculate from the down-stream of each category of genomic site (e.g. TSS)
 danpos.py profile sample1-140-160.Fnor.smooth.wig,sample2-140-160.Fnor.smooth.wig \
---genomic_sites TSS --genefile_paths ../../../annotation_subsets/Athaliana_proteincoding.genePred --flank_up 500 --flank_dn 1000
+--genomic_sites TSS --genefile_paths ../../../annotation_subsets/Araport_proteincoding.genePred --flank_up 500 --flank_dn 1000
 ```
 
 ### Output
