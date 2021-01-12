@@ -1,5 +1,5 @@
 # Workflow for generating nucleosome occupancy plots from MNase-seq data
-Emma Tung Corcoran (12/09/2020)
+Emma Tung Corcoran (01/12/2021)
 
 ## Introduction
 This document covers my basic workflow for processing paired-end MNase-seq (micrococcal nuclease digestion with deep sequencing) samples and assaying nucleosome occupancy at different genomic loci. I used the [Ruddle HPC cluster at the Yale Center for Research Computing](https://docs.ycrc.yale.edu/clusters-at-yale/clusters/ruddle/) for my HPC environment.
@@ -327,7 +327,7 @@ In order to run the profile function in the next step, correctly-formatted annot
 ```
 #first parameter: input genePred file
 #second paramter: output file name
-Rscript nonredundantGenes_firstiso_gtf.R "Araport.gtf" "Araport_nonredundant.gtf"
+Rscript nonredundantGenes_firstiso_gtf.R "Araport_transcripts.gtf" "Araport_nonredundant.gtf"
 ```
 Finally, with the genePred file containing single isoforms for each gene, I can then make sublists of the genes with another R script included in the annotation/ folder (called generateGeneSublist.R). Since I was interested in all protein-coding genes, I made a sublist containing only the protein-coding genes.
 ```
