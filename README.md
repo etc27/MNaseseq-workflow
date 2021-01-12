@@ -41,6 +41,7 @@ In order to organize all of the files generated from processing the RNA-seq raw 
   │           ├── aligned_logs/     <- Log from running bowtie2 alignment step
   │           ├── aligned_sam/      <- Alignment files generated from bowtie2 (.SAM)
   │       ├── 4_multiQC/            <- Overall report of logs for each step
+  │       ├── final_counts/         <- Summarized gene counts across all samples
   │       ├── danpos/             <- Output from danpos
   │       ├── deeptools/          <- Output from deeptools
   │  
@@ -299,7 +300,55 @@ samtools index sample-140-160.bam
 ### Description
 [deepTools: tools for exploring deep sequencing data](https://deeptools.readthedocs.io/en/develop/). deepTools is a suite of python tools particularly developed for the efficient analysis of high-throughput sequencing data, such as ChIP-seq, RNA-seq or MNase-seq.
 
-### Compute bam coverage using RPKM normalization
+### Compute normalization factors for each sample using edgeR
+I follow the strategy on [this page](https://www.biostars.org/p/413626/#414440) to compute the normalization factors for each sample. This method corrects for systematic differences in library composition. First, use featureCounts to create a count matrix where rows are genes and columns are samples.
+```
+# Command to run featureCounts
+# Change directory into the aligned .BAM folder
+cd results/3_aligned_sequences/aligned_bam
+
+# Store list of files as a variable
+dirlist=$(ls -t ./*.bam | tr '\n' ' ')
+echo $dirlist
+
+# Run featureCounts on all of the samples
+#-a: path to annotation
+#-o: path to output results
+#-g: attribute type (i.e. gene_id or gene_name)
+#-T: number of threads
+#-M: count multi-mapping reads (--fraction: a fractional count 1/n will be generated for each multi-mapping read, where n is the number of alignments reported for the read)
+#-p: fragments (or templates) will be counted instead of reads; this option is only applicable for paired-end reads
+featureCounts -a ../../annotation/* -o ../../results/final_counts/final_counts.txt -g 'gene_name' -T 4 -M --fraction -p $dirlist
+```
+
+Next, I download final_counts.txt onto my laptop and use RStudio to calculate the normalization factors using the following script.
+```
+#load libraries
+library(edgeR)
+
+######Import featureCounts output
+# Import gene counts table
+# - skip first row
+# - make row names the gene identifiers
+raw.counts = read.table("final_counts.txt", header = TRUE, as.is=T, skip = 1, row.names = 1)
+
+## edgeR:: calcNormFactors
+NormFactor <- calcNormFactors(object = raw.counts, method = "TMM")
+
+## raw library size:
+LibSize <- colSums(raw.counts)
+
+## calculate size factors:
+SizeFactors <- NormFactor * LibSize / 1000000
+write.table(SizeFactors, "SizeFactors.txt", quote=F, col.names=F, row.names = T)
+
+## Reciprocal (for using --scaleFactor command from deeptools bamCoverage)
+SizeFactors.Reciprocal <- 1/SizeFactors
+write.table(SizeFactors.Reciprocal, "SizeFactorsReciprocal.txt", quote=F, col.names=F, row.names = T)
+```
+SizeFactors.Reciprocal contains the normalization factor to use for each sample in the next step (as the --scaleFactor parameter in bamCoverage).
+
+### Compute normalized bamCoverage
 [bamCoverage](https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html) takes an alignment of reads or fragments as input (BAM file) and generates a coverage track (bigWig or bedGraph) as output.
 ```
 #--bam: input bam file
