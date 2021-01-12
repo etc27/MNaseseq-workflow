@@ -302,6 +302,7 @@ samtools index sample-140-160.bam
 
 ### Compute normalization factors for each sample using edgeR
 I follow the strategy on [this page](https://www.biostars.org/p/413626/#414440) to compute the normalization factors for each sample. This method corrects for systematic differences in library composition. First, use featureCounts to create a count matrix where rows are genes and columns are samples.
+#### featureCounts Command
 ```
 # Command to run featureCounts
 # Change directory into the aligned .BAM folder
@@ -320,7 +321,14 @@ echo $dirlist
 #-p: fragments (or templates) will be counted instead of reads; this option is only applicable for paired-end reads
 featureCounts -a ../../annotation/* -o ../../results/final_counts/final_counts.txt -g 'gene_name' -T 4 -M --fraction -p $dirlist
 ```
+#### Output
+```
+── results/4_final_counts/
+    └── final_counts.txt                <- Final gene counts across all samples
+    └── final_counts.txt.summary        <- Summary of gene counts
+```
 
+#### Use edgeR package in RStudio to calculate normalization factors
 Next, I download final_counts.txt onto my laptop and use RStudio to calculate the normalization factors using the following script.
 ```
 #load libraries
