@@ -382,13 +382,13 @@ bamCoverage --bam sample-140-160.bam -o sample1-140-160.mnase-fcnorm.bw \
 ### Make annotation files
 In order to run the profile function in the next step, correctly-formatted annotation files are required. Since the Araport11 annotation contains multiple isoforms for many of the genes, I removed redundant isoforms to keep only the first isoform listed for each gene. The R script that I used to do this step (called nonredundantGenes_firstiso_gtf.R) is included in the annotation/ folder.
 ```
-#first parameter: input genePred file
+#first parameter: input gtf file
 #second paramter: output file name
 Rscript nonredundantGenes_firstiso_gtf.R "Araport_transcripts.gtf" "Araport_nonredundant.gtf"
 ```
-Finally, with the genePred file containing single isoforms for each gene, I can then make sublists of the genes with another R script included in the annotation/ folder (called generateGeneSublist.R). Since I was interested in all protein-coding genes, I made a sublist containing only the protein-coding genes.
+Finally, with the gtf file containing single isoforms for each gene, I can then make sublists of the genes with another R script included in the annotation/ folder (called generateGeneSublist.R). Since I was interested in all protein-coding genes, I made a sublist containing only the protein-coding genes.
 ```
-#first parameter: input genePred file
+#first parameter: input gtf file
 #second parameter: list of genes to include in sublist
 #third parameter: output file name
 Rscript generateGeneSublist.R "Araport_nonredundant.gtf" "protein_coding.txt" "Araport_proteincoding.gtf"
