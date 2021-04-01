@@ -1,5 +1,5 @@
 # Workflow for generating nucleosome occupancy plots from MNase-seq data
-Emma Tung Corcoran (01/12/2021)
+Emma Tung Corcoran (04/01/2021)
 
 ## Introduction
 This document covers my basic workflow for processing paired-end MNase-seq (micrococcal nuclease digestion with deep sequencing) samples and assaying nucleosome occupancy at different genomic loci. I used the [Ruddle HPC cluster at the Yale Center for Research Computing](https://docs.ycrc.yale.edu/clusters-at-yale/clusters/ruddle/) for my HPC environment.
@@ -309,7 +309,7 @@ I follow the strategy on [this page](https://www.biostars.org/p/413626/#414440) 
 cd results/3_aligned_sequences/aligned_bam
 
 # Store list of files as a variable
-dirlist=$(ls -t ./*.bam | tr '\n' ' ')
+dirlist=$(ls -t ./*140-160.bam | tr '\n' ' ')
 echo $dirlist
 
 # Run featureCounts on all of the samples
@@ -319,7 +319,7 @@ echo $dirlist
 #-T: number of threads
 #-M: count multi-mapping reads (--fraction: a fractional count 1/n will be generated for each multi-mapping read, where n is the number of alignments reported for the read)
 #-p: fragments (or templates) will be counted instead of reads; this option is only applicable for paired-end reads
-featureCounts -a ../../annotation/* -o ../../results/final_counts/final_counts.txt -g 'gene_name' -T 4 -M --fraction -p $dirlist
+featureCounts -a ../../../annotation/* -o ../../results/final_counts/final_counts.txt -g 'gene_name' -T 4 -M --fraction -p $dirlist
 ```
 #### Output
 ```
