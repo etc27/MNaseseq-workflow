@@ -446,7 +446,7 @@ plotHeatmap -m mnase-fcnorm-sm40-TSS.mat.gz -out mnase-fcnorm.png --samplesLabel
 ### Run dpos
 Dpos, the first peak-calling algorithm developed in DANPOS, analyzes changes in the location, fuzziness, and occupancy at each nucleosome or protein binding position. Multiple samples (separated by commas) can be provided as inputs to the same command.
 ```
-# Run dpos from 5_danpos folder
+# Run dpos from danpos/ folder
 #-m: set to 1 if the input data is mate-pair (paired-end) reads
 #--mifrsz: the smallest DNA fragment to be considered
 #--mafrsz: the largest DNA fragment to be considered
@@ -457,7 +457,7 @@ danpos.py dpos ../3_aligned_sequences/aligned_bam/sample1-140-160.bam,../3_align
 
 ### Output
 ```
-── 5_danpos/output/pooled/
+── danpos/output/pooled/
     └── sample1-140-160.Fnor.smooth.wig                      <- These .wig format files contain protein occupancy values at each base pair across the whole genome in sample 1
     └── sample1-140-160.Fnor.smooth.positions.xls            <- These files contains the protein binding positions defined in sample 1
     └── sample2-140-160.Fnor.smooth.wig                      <- These .wig format files contain protein occupancy values at each base pair across the whole genome in sample 2
@@ -492,7 +492,7 @@ Rscript geneSublist_genepred.R "Araport_nonredundant.genePred" "protein_coding.t
 ### Run profile
 Profile is a function in DANPOS for analyzing the distribution of a chromatin feature flanking each given group of genomic sites or regions, such as transcription start sites, gene bodies, or enhancers.
 ```
-# Run profile from 5_danpos/pooled folder
+# Run profile from danpos/pooled/ folder
 #--genomic_sites: the category of genomic site to be analyzed (TSS=transcription start site)
 #--genefile_paths: path to file that contain a set of genes (.genePred file with all protein-coding genes in Arabidopsis thaliana)
 #--flank_up: How far to calculate from the up-stream of each category of genomic site (e.g. TSS)
@@ -503,7 +503,7 @@ danpos.py profile sample1-140-160.Fnor.smooth.wig,sample2-140-160.Fnor.smooth.wi
 
 ### Output
 ```
-── 5_danpos/output/pooled
+── danpos/output/pooled
     └── profile_TSS.xls                            <- This file contains the data that is used to plot each figure in the .pdf file.
     └── profile.pdf                                <- This file contains all the figures plotted by the Profile function.
     └── profile.R                                  <- This file contains all the R commands for plotting figures in the .pdf file. 
