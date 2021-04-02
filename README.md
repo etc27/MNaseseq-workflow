@@ -492,7 +492,7 @@ Rscript geneSublist_genepred.R "Araport_nonredundant.genePred" "protein_coding.t
 ### Run profile
 Profile is a function in DANPOS for analyzing the distribution of a chromatin feature flanking each given group of genomic sites or regions, such as transcription start sites, gene bodies, or enhancers.
 ```
-# Run profile from danpos/pooled/ folder
+# Run profile from danpos/output/pooled/ folder
 #--genomic_sites: the category of genomic site to be analyzed (TSS=transcription start site)
 #--genefile_paths: path to file that contain a set of genes (.genePred file with all protein-coding genes in Arabidopsis thaliana)
 #--flank_up: How far to calculate from the up-stream of each category of genomic site (e.g. TSS)
