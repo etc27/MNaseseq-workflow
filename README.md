@@ -599,4 +599,4 @@ ggsave("Alldata.pdf", device=pdf())
 ## 11. Analyze nucleosome metaprofiles and quantify nucleosome phasing
 
 ### Description
-Custom Python script can be used to further analyze nucleosome metaprofiles (analysis/metaprofile_analysis.ipynb) and quantify nucleosome phasing (analysis/peak_height.ipynb). Example file is uploaded in analysis/mnase-merged-proteincoding.tab.
+Custom Python script can be used to further analyze nucleosome metaprofiles (analysis/metaprofile_analysis.ipynb) and quantify nucleosome phasing (analysis/peak_height.ipynb).
