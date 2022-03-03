@@ -595,3 +595,8 @@ ggplot(gathered_vals, aes(x=position, y = count, group = genotype, colour = geno
   theme(text = element_text(size=15))
 ggsave("Alldata.pdf", device=pdf())
 ```
+
+## 11. Analyze nucleosome metaprofiles and quantify nucleosome phasing
+
+### Description
+Custom Python script can be used to further analyze nucleosome metaprofiles (analysis/metaprofile_analysis.ipynb) and quantify nucleosome phasing (analysis/peak_height.ipynb). Example file is uploaded in analysis/mnase-merged-proteincoding.tab.
