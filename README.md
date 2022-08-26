@@ -1,8 +1,8 @@
 # Workflow for generating nucleosome occupancy plots from MNase-seq data
-Emma Tung Corcoran (03/03/2022)
+Emma Tung Corcoran
 
 ## Introduction
-This document covers my basic workflow for processing paired-end MNase-seq (micrococcal nuclease digestion with deep sequencing) samples and assaying nucleosome occupancy at different genomic loci. I used the [Ruddle HPC cluster at the Yale Center for Research Computing](https://docs.ycrc.yale.edu/clusters-at-yale/clusters/ruddle/) for my HPC environment.
+This document covers my basic workflow for processing paired-end MNase-seq (micrococcal nuclease digestion with deep sequencing) samples and assaying nucleosome occupancy at different genomic loci. I used the [Ruddle HPC cluster at the Yale Center for Research Computing](https://docs.ycrc.yale.edu/clusters-at-yale/clusters/ruddle/) for my HPC environment. This workflow was used for analysis in my first-author paper, [Systematic histone H4 replacement in Arabidopsis thaliana reveals a role for H4R17 in regulating flowering time] (https://doi.org/10.1093/plcell/koac211).
 
 ## 1. Setup
 
