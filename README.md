@@ -329,7 +329,7 @@ featureCounts -a ../../../annotation/* -o ../../results/final_counts/final_count
 ```
 
 #### Use edgeR package in RStudio to calculate normalization factors
-Next, I download final_counts.txt onto my laptop and use RStudio to calculate the normalization factors using the following script.
+Next, I download final_counts.txt onto my laptop and use RStudio to calculate the normalization factors using the following script. I use the TMM method for between-sample normalization.
 ```
 #load libraries
 library(edgeR)
